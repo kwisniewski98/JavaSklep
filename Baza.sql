@@ -83,6 +83,7 @@ if not exists ( SELECT *
                  FROM INFORMATION_SCHEMA.TABLES where  TABLE_NAME = 'Zamowienie') 
 	create table Zamowienie(
 		id int PRIMARY KEY identity ,
+		osoba int foreign key references Osoba(id),
 		ilosc int check (ilosc >=0) not null,
 		produkt int foreign key references Stan(id) not null,
 		wartosc_brutto float,
@@ -96,10 +97,10 @@ if not exists ( SELECT *
                  FROM INFORMATION_SCHEMA.TABLES where  TABLE_NAME = 'Zapotrzebowanie') 
 	create table Zapotrzebowanie(
 		id int PRIMARY KEY identity ,
-		oddzial int foreign key references Oddzial(id) not null,
+		stan int foreign key references Stan(id) not null,
 		ilosc int check (ilosc >=0) not null,
-		produkt int foreign key references Produkt(id) not null,
 		wartosc float,
+		status varchar(20) not null ,
 		data Date not null,
 
 		)
@@ -143,11 +144,14 @@ insert into Stan (oddzial, ilosc, produkt) values(1, 1, 2)
 insert into Stan (oddzial, ilosc, produkt) values(2, 5, 2)
 go
 
-insert into Zamowienie (ilosc, produkt, wartosc_brutto, data_zamowienia) values(1, 1, 1968, GETDATE())
-go
-
-insert into Zapotrzebowanie (oddzial, ilosc, produkt, data )values(2, 5, 2, GETDATE())
+-- insert into Zamowienie (ilosc, produkt, wartosc_brutto, data_zamowienia) values(1, 1, 1968, GETDATE())
+-- go
+--
+-- insert into Zapotrzebowanie (oddzial, ilosc, produkt, data )values(2, 5, 2, GETDATE())
 go
 insert into Uzytkownik values ('temp', 'temp123', 'Manager', 1)
 insert into Uzytkownik values ('Klient', 'temp123', 'Klient', 1)
 insert into Uzytkownik values ('S', 'temp123', 'Sprzedawca', 1)
+
+
+select * from Stan inner join Oddzial O on Stan.oddzial = O.id

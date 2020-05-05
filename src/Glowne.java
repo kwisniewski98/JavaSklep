@@ -16,6 +16,7 @@ public class Glowne extends JFrame implements ActionListener{
     /*
     Tu podajemy url do bazy danych
     */
+    int id_osoba;
     String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:52333;database=Sklep;user=kwisniewski;password=temp123";
     Connection con;
     JButton zaloguj, zarejestruj_klient, bzamow, btypy, bpotwierdz_zamowienie;
@@ -28,7 +29,8 @@ public class Glowne extends JFrame implements ActionListener{
     JMenuBar menu;
     JPanel mainPanel;
     JMenu Plik, Pomoc, Klientm, Pracownik;
-    JMenuItem Wyjscie, PodPomoc, Produkty, Klient, Oddzialy, Status, DodajProdukt, DodajTyp;
+    JMenuItem Wyjscie, PodPomoc, Produkty, Klient,
+            Oddzialy, Status, DodajProdukt, DodajTyp, DodajZapotrzebowanie;
     String typUzytkownika;
 
     List<String[]> lista=new ArrayList<String[]>();
@@ -126,6 +128,9 @@ public class Glowne extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
         Object zrodlo=e.getSource();
+        if (zrodlo == DodajZapotrzebowanie){
+            frame1 = new Zapotrzebowanie(con);
+        }
         if (zrodlo == DodajTyp) {
             frame1 = new Typ(con);
         }
@@ -135,7 +140,7 @@ public class Glowne extends JFrame implements ActionListener{
         if (zrodlo == bpotwierdz_zamowienie) {
             String id = (String) tlista.getValueAt(tlista.getSelectedRow(), 0);
             try {
-                String sql = "UPDATE Zamowienie set status = 'Zakonczone' where id = '" + id + "'";
+                String sql = "UPDATE Zamowienie set status = 'Zakonczone', data_realizacji = GETDATE() where id = '" + id + "'";
                 System.out.println(id);
                 Statement st = con.createStatement();
                 st.executeUpdate(sql);
@@ -173,15 +178,10 @@ public class Glowne extends JFrame implements ActionListener{
         }
 
         if (zrodlo == Status){
-            String nr_zamowienia = JOptionPane.showInputDialog("<html>Podaj numer/numery zamowien<br/>Wiele numerow rozdziela sie przecinkiem:</html>");
-            String[] numery = nr_zamowienia.split(",");
-            for (int i = 0; i < numery.length; i++){
-                numery[i] = "'" + numery[i] + "'";
-            }
+
             String sql ="select Zamowienie.id as 'nr. zamowienia' ,Zamowienie.ilosc, Produkt.nazwa, status, data_zamowienia" +
                     " from Zamowienie inner join Stan on Zamowienie.produkt = Stan.id" +
-                    " inner join Produkt on Produkt.id = Stan.produkt where Zamowienie.id in ("
-                    + String.join(",", numery)+ ") ";
+                    " inner join Produkt on Produkt.id = Stan.produkt where ) ";
             System.out.println(sql);
             try {
                 tlista = this.stworz_liste(sql);
@@ -242,11 +242,12 @@ public class Glowne extends JFrame implements ActionListener{
 
                     sql = "UPDATE Stan set Stan.ilosc='" + String.valueOf (ilosc_stan - ilosc) + "' where id ='" + id +"'";
                     st.executeUpdate(sql);
-                    sql = "insert into Zamowienie (ilosc, produkt, wartosc_brutto, data_zamowienia, data_realizacji, status)" +
-                            " values (?, ?, ?, GETDATE(), null, 'Przyjeto')";
+                    sql = "insert into Zamowienie (osoba, ilosc, produkt, wartosc_brutto, data_zamowienia, data_realizacji, status)" +
+                            " values (?, ?, ?, ?, GETDATE(), null, 'Przyjeto')";
                     PreparedStatement psmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                    psmt.setString(1, tilosc.getText());
-                    psmt.setString(2, id);
+                    psmt.setInt(1, id_osoba);
+                    psmt.setString(2, tilosc.getText());
+                    psmt.setString(3, id);
                     System.out.println(tlista.getSelectedRow());
                     float cena_netto = Float.parseFloat((String) tlista.getValueAt(tlista.getSelectedRow(), 1));
                     float vat = Float.parseFloat((String) tlista.getValueAt(tlista.getSelectedRow(), 2));
@@ -279,12 +280,13 @@ public class Glowne extends JFrame implements ActionListener{
             String komunikat = "";
             try {
                 Statement st = con.createStatement();
-                ResultSet rs = st.executeQuery("select haslo, typ from Uzytkownik where login = '"+ slogin +"'");
+                ResultSet rs = st.executeQuery("select haslo, typ, osoba from Uzytkownik where login = '"+ slogin +"'");
                 rs.next();
                 String resp = rs.getString(1);
                 if (resp.equals(shaslo)) {
                     komunikat = "Zalogowano poprawnie";
                     typUzytkownika = rs.getString(2);
+                    id_osoba = rs.getInt(3);
                     this.zaloguj(typUzytkownika);
                 }else
                 {
@@ -396,6 +398,14 @@ public class Glowne extends JFrame implements ActionListener{
             DodajTyp = new JMenuItem("Dodaj typ");
             DodajTyp.addActionListener(this);
             Pracownik.add(DodajTyp);
+
+            DodajZapotrzebowanie = new JMenuItem("Dodaj Zapotrzebowanie");
+            DodajZapotrzebowanie.addActionListener(this);
+            Pracownik.add(DodajZapotrzebowanie);
+
+            menu.revalidate();
+            menu.repaint();
+
         }
 
 

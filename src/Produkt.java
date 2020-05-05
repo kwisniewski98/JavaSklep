@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Produkt extends JFrame implements ActionListener {
     JButton zarejetruj;
@@ -68,7 +70,7 @@ public class Produkt extends JFrame implements ActionListener {
 
                        }else {
                            String skrotId = "";
-
+                           int produktId ;
                            ResultSet rs;
                            String sql = "select id from Typ where skrot = '" + ttyp.getText() + "'";
                            Statement st = con.createStatement();
@@ -83,7 +85,28 @@ public class Produkt extends JFrame implements ActionListener {
                                psmt.setString(4, skrotId);
                                int rowAffected = psmt.executeUpdate();
                                if (rowAffected == 1) {
+
+                                   produktId = rs.getInt(1);
+                                   sql = "SELECT id from Oddzial";
+                                   psmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                                   rs = psmt.executeQuery();
+                                   ArrayList<String> oddzialy_id = new ArrayList<>();
+                                   while (rs.next()){
+                                       oddzialy_id.add(rs.getString(1));
+                                   }
+                                   System.out.println(oddzialy_id);
+                                   String id;
+                                   for (Iterator<String> it = oddzialy_id.iterator(); it.hasNext(); ) {
+                                          id = it.next();
+                                          sql = "insert into Stan values (?, 0, ?, null )";
+                                          psmt = con.prepareStatement(sql);
+                                          psmt.setString(1, id);
+                                          psmt.setInt(2, produktId);
+                                          psmt.executeUpdate();
+                                   }
+
                                    komunikat = "Pomyslnie dodano Produkt";
+
                                }
                            } else {
                                 komunikat = "Nie znaleziono takiego typu";

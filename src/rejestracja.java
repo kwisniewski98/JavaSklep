@@ -160,6 +160,7 @@ public class rejestracja extends JFrame implements ActionListener {
                                komunikat = "Pomyslnie dodano uzytkownika";
                            }
                        }
+                       /* TODO wyswietlanie listy zamowien klienta*/
 
                        } catch(SQLException ex){
                            ex.printStackTrace();
