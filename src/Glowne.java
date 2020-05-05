@@ -181,7 +181,7 @@ public class Glowne extends JFrame implements ActionListener{
 
             String sql ="select Zamowienie.id as 'nr. zamowienia' ,Zamowienie.ilosc, Produkt.nazwa, status, data_zamowienia" +
                     " from Zamowienie inner join Stan on Zamowienie.produkt = Stan.id" +
-                    " inner join Produkt on Produkt.id = Stan.produkt where ) ";
+                    " inner join Produkt on Produkt.id = Stan.produkt where Zamowienie.osoba = '" + id_osoba + "'";
             System.out.println(sql);
             try {
                 tlista = this.stworz_liste(sql);
@@ -243,7 +243,7 @@ public class Glowne extends JFrame implements ActionListener{
                     sql = "UPDATE Stan set Stan.ilosc='" + String.valueOf (ilosc_stan - ilosc) + "' where id ='" + id +"'";
                     st.executeUpdate(sql);
                     sql = "insert into Zamowienie (osoba, ilosc, produkt, wartosc_brutto, data_zamowienia, data_realizacji, status)" +
-                            " values (?, ?, ?, ?, GETDATE(), null, 'Przyjeto')";
+                            " values (?, ?, ?,?,   GETDATE(), null, 'Przyjeto')";
                     PreparedStatement psmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                     psmt.setInt(1, id_osoba);
                     psmt.setString(2, tilosc.getText());
@@ -257,7 +257,7 @@ public class Glowne extends JFrame implements ActionListener{
 
                     float cena_brutto = cena_netto * (1 + vat) * ilosc;
 
-                    psmt.setFloat(3, cena_brutto);
+                    psmt.setFloat(4, cena_brutto);
                     if (psmt.executeUpdate() == 1) {
                         int id_zamowienia = -1;
                         rs = psmt.getGeneratedKeys();
@@ -307,7 +307,7 @@ public class Glowne extends JFrame implements ActionListener{
 
         }
         if (zrodlo == zarejestruj_klient) {
-            frame1 = new rejestracja(con, "Klient");
+            frame1 = new Rejestracja(con, "Klient");
         }
 
         if (zrodlo==Produkty)

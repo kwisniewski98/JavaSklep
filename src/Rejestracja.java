@@ -4,14 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-public class rejestracja extends JFrame implements ActionListener {
+public class Rejestracja extends JFrame implements ActionListener {
     JButton zarejetruj;
     Connection con;
     JFrame f;
     String typ;
     JTextField tlogin, timie, tnazwisko, twojewodztwo, tmiasto, tulica, tnr_budynku, tnr_lokalu;
     JPasswordField thaslo;
-    public rejestracja(Connection con, String typ){
+    public Rejestracja(Connection con, String typ){
         this.con = con;
         this.typ = typ;
         setLayout(null);
