@@ -149,7 +149,6 @@ public class Glowne extends JFrame implements ActionListener{
             String id = (String) tlista.getValueAt(tlista.getSelectedRow(), 0);
             try {
                 String sql = "UPDATE Zamowienie set status = 'Zakonczone', data_realizacji = GETDATE() where id = '" + id + "'";
-                System.out.println(id);
                 Statement st = con.createStatement();
                 st.executeUpdate(sql);
                 wyswietl_komunikat("Potwierdzono otrzymanie zamowienia nr: " + id);
@@ -170,7 +169,6 @@ public class Glowne extends JFrame implements ActionListener{
                 ttypy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
                     public void valueChanged(ListSelectionEvent event) {
                         typ = (String) ttypy.getValueAt(ttypy.getSelectedRow(), 0);
-                        System.out.println(typ);
                         Produkty.doClick();
                     }
                 });
@@ -190,7 +188,6 @@ public class Glowne extends JFrame implements ActionListener{
             String sql ="select Zamowienie.id as 'nr. zamowienia' ,Zamowienie.ilosc, Produkt.nazwa, status, data_zamowienia" +
                     " from Zamowienie inner join Stan on Zamowienie.produkt = Stan.id" +
                     " inner join Produkt on Produkt.id = Stan.produkt where Zamowienie.osoba = '" + id_osoba + "'";
-            System.out.println(sql);
             try {
                 tlista = Misc.stworz_liste(sql, con);
                 JScrollPane sp;
@@ -256,12 +253,8 @@ public class Glowne extends JFrame implements ActionListener{
                     psmt.setInt(1, id_osoba);
                     psmt.setString(2, tilosc.getText());
                     psmt.setString(3, id);
-                    System.out.println(tlista.getSelectedRow());
                     float cena_netto = Float.parseFloat((String) tlista.getValueAt(tlista.getSelectedRow(), 1));
                     float vat = Float.parseFloat((String) tlista.getValueAt(tlista.getSelectedRow(), 2));
-                    System.out.println(cena_netto);
-                    System.out.println(vat);
-                    System.out.println(ilosc);
 
                     float cena_brutto = cena_netto * (1 + vat) * ilosc;
 
@@ -357,7 +350,8 @@ public class Glowne extends JFrame implements ActionListener{
 
             }
             catch(SQLException error_polaczenie) {
-                System.out.println(error_polaczenie);}
+                error_polaczenie.printStackTrace();
+            }
         }
         if(zrodlo==Wyjscie) {
             try {

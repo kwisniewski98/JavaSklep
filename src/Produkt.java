@@ -94,7 +94,6 @@ public class Produkt extends JFrame implements ActionListener {
                                    while (rs.next()){
                                        oddzialy_id.add(rs.getString(1));
                                    }
-                                   System.out.println(oddzialy_id);
                                    String id;
                                    for (Iterator<String> it = oddzialy_id.iterator(); it.hasNext(); ) {
                                           id = it.next();

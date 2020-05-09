@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Misc {
     public static JFrame generuj_komunikat(String komunikat) {
@@ -43,9 +42,6 @@ public class Misc {
         for (int i = 0; i < array.length; i++) {
             String[] row = lista.get(i);
             array[i] = row;
-        }
-        for (int i = 0; i < array.length; i++) {
-            System.out.println(Arrays.toString(array[i]));
         }
         zapytanie2.close();
 

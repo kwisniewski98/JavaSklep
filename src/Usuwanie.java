@@ -53,7 +53,6 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
                 mid_panel = new JPanel();
                 bot_panel = new JPanel();
                 String tabela = (String) cblista.getSelectedItem();
-                System.out.println(tabela);
                 String sql = "Select * from " + tabela;
                 jtabela = Misc.stworz_liste(sql, con);
                 splista = new JScrollPane(jtabela);
