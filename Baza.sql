@@ -108,10 +108,11 @@ go
 if not exists ( SELECT *
                 FROM INFORMATION_SCHEMA.TABLES where  TABLE_NAME = 'Uzytkownicy')
 create table Uzytkownik(
-                           login varchar(30) primary key,
-                           haslo varchar(30) not null ,
-                           typ varchar(15) check(typ = 'Manager' or typ = 'Klient' or typ = 'Sprzedawca') not null,
-                           osoba int foreign key references Osoba(id),
+                           id    int primary key identity,
+                           login varchar(30)                                                                 not null,
+                           haslo varchar(30)                                                                 not null,
+                           typ   varchar(15) check (typ = 'Manager' or typ = 'Klient' or typ = 'Sprzedawca') not null,
+                           osoba int foreign key references Osoba (id),
 )
 go
 

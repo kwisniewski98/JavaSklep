@@ -1,10 +1,9 @@
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.event.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,18 +27,19 @@ public class Glowne extends JFrame implements ActionListener{
     JFrame frame1;
     JMenuBar menu;
     JPanel mainPanel;
-    JMenu Plik, Pomoc, Klientm, Pracownik;
+    JMenu Plik, Pomoc, Klientm, Pracownik, Manager;
     JMenuItem Wyjscie, PodPomoc, Produkty, Klient,
-            Oddzialy, Status, DodajProdukt, DodajTyp, DodajZapotrzebowanie;
+            Oddzialy, Status, DodajProdukt, DodajTyp, DodajZapotrzebowanie, Usun, DodajSprzedawce,
+            DodajManagera;
     String typUzytkownika;
 
-    List<String[]> lista=new ArrayList<String[]>();
+    List<String[]> lista = new ArrayList<String[]>();
 
     public Glowne() throws ClassNotFoundException, SQLException {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        con = DriverManager.getConnection(this.url );
-        setSize(400,300);
-        setLocation(100,100);
+        con = DriverManager.getConnection(this.url);
+        setSize(400, 300);
+        setLocation(100, 100);
         setResizable(false);
         setLayout(null);
 
@@ -126,15 +126,25 @@ public class Glowne extends JFrame implements ActionListener{
         okno.setVisible(true);
     }
     @Override
-    public void actionPerformed(ActionEvent e){
-        Object zrodlo=e.getSource();
-        if (zrodlo == DodajZapotrzebowanie){
+    public void actionPerformed(ActionEvent e) {
+        Object zrodlo = e.getSource();
+
+        if (zrodlo == DodajManagera) {
+            frame1 = new Rejestracja(con, "Manager");
+        }
+        if (zrodlo == DodajSprzedawce) {
+            frame1 = new Rejestracja(con, "Sprzedawca");
+        }
+        if (zrodlo == Usun) {
+            frame1 = new Usuwanie(con);
+        }
+        if (zrodlo == DodajZapotrzebowanie) {
             frame1 = new Zapotrzebowanie(con);
         }
         if (zrodlo == DodajTyp) {
             frame1 = new Typ(con);
         }
-        if (zrodlo == DodajProdukt){
+        if (zrodlo == DodajProdukt) {
             frame1 = new Produkt(con);
         }
         if (zrodlo == bpotwierdz_zamowienie) {
@@ -387,7 +397,7 @@ public class Glowne extends JFrame implements ActionListener{
         Status.addActionListener(this);
         Klientm.add(Status);
 
-        if (typUzytkownika.equals("Sprzedawca")){
+        if (typUzytkownika.equals("Sprzedawca") || typUzytkownika.equals("Manager")) {
             Pracownik = new JMenu("Pracownik");
             menu.add(Pracownik);
 
@@ -406,6 +416,25 @@ public class Glowne extends JFrame implements ActionListener{
             menu.revalidate();
             menu.repaint();
 
+        }
+        if (typUzytkownika.equals("Manager")) {
+            Manager = new JMenu("Manager");
+            menu.add(Manager);
+
+            Usun = new JMenuItem("Usuwanie");
+            Usun.addActionListener(this);
+            Manager.add(Usun);
+
+            DodajSprzedawce = new JMenuItem("Dodaj Sprzedawce");
+            DodajSprzedawce.addActionListener(this);
+            Manager.add(DodajSprzedawce);
+
+            DodajManagera = new JMenuItem("Dodaj Managera");
+            DodajManagera.addActionListener(this);
+            Manager.add(DodajManagera);
+
+            menu.revalidate();
+            menu.repaint();
         }
 
 

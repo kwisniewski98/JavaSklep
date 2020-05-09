@@ -4,7 +4,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Zapotrzebowanie extends JFrame implements ActionListener {
@@ -96,8 +95,6 @@ public class Zapotrzebowanie extends JFrame implements ActionListener {
                        }else {
                            String sql = "insert into Zapotrzebowanie values (?, ?, null, 'Przyjeto', GETDATE())";
                            PreparedStatement psmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                           System.out.println(idStan);
-                           System.out.println(tilosc.getText());
                            psmt.setInt(1, idStan+1);
                            psmt.setString(2, tilosc.getText());
                            int rowAffected = psmt.executeUpdate();
