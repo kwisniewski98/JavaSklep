@@ -1,7 +1,10 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Typ extends JFrame implements ActionListener {
     JButton zarejetruj;
@@ -59,9 +62,6 @@ public class Typ extends JFrame implements ActionListener {
                            komunikat = "Wszystkie pola musza byc wypelnione";
 
                        } else {
-                           String skrotId = "";
-
-                           ResultSet rs;
                            String sql = "insert into Typ values (?, ?, ?)";
                            PreparedStatement psmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                            psmt.setString(1, tskrot.getText());

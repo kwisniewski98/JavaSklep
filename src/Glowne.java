@@ -30,10 +30,9 @@ public class Glowne extends JFrame implements ActionListener{
     JMenu Plik, Pomoc, Klientm, Pracownik, Manager;
     JMenuItem Wyjscie, PodPomoc, Produkty, Klient,
             Oddzialy, Status, DodajProdukt, DodajTyp, DodajZapotrzebowanie, Usun, DodajSprzedawce,
-            DodajManagera;
+            DodajManagera, DodajOddzial;
     String typUzytkownika;
 
-    List<String[]> lista = new ArrayList<String[]>();
 
     public Glowne() throws ClassNotFoundException, SQLException {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -128,7 +127,9 @@ public class Glowne extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         Object zrodlo = e.getSource();
-
+        if (zrodlo == DodajOddzial) {
+            frame1 = new Oddzial(con);
+        }
         if (zrodlo == DodajManagera) {
             frame1 = new Rejestracja(con, "Manager");
         }
@@ -433,6 +434,10 @@ public class Glowne extends JFrame implements ActionListener{
             DodajManagera.addActionListener(this);
             Manager.add(DodajManagera);
 
+            DodajOddzial = new JMenuItem("Dodaj Managera");
+            DodajOddzial.addActionListener(this);
+            Manager.add(DodajOddzial);
+
             menu.revalidate();
             menu.repaint();
         }
@@ -441,6 +446,8 @@ public class Glowne extends JFrame implements ActionListener{
     }
     public JTable stworz_liste(String sql) throws SQLException {
         //Zapytanie SQL
+        List<String[]> lista = new ArrayList<>();
+
         Statement zapytanie2 = con.createStatement();
 
 
@@ -449,7 +456,7 @@ public class Glowne extends JFrame implements ActionListener{
         int ile_kolumn = rsmd.getColumnCount();
 
         String[] columns = new String[ile_kolumn];
-        for (int i = 0; i < ile_kolumn; i++){
+        for (int i = 0; i < ile_kolumn; i++) {
             columns[i] = rsmd.getColumnName(i+1);
         }
         //pobranie wybranych kolumn do jednej listy
@@ -466,7 +473,6 @@ public class Glowne extends JFrame implements ActionListener{
             String[] row=lista.get(i);
             array[i]=row;
         }
-        lista = new ArrayList<String[]>();
         for (int i = 0; i < array.length; i++){
             System.out.println(Arrays.toString(array[i]));
         }
