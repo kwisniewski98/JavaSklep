@@ -4,9 +4,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 
@@ -166,7 +163,7 @@ public class Glowne extends JFrame implements ActionListener{
         {
             String sql = "select skrot, opis, przeznaczenie from Typ";
             try {
-                ttypy = stworz_liste(sql);
+                ttypy = Misc.stworz_liste(sql, con);
                 JScrollPane sp;
                 sp = new JScrollPane(ttypy);
                 frame1 = new JFrame();
@@ -195,7 +192,7 @@ public class Glowne extends JFrame implements ActionListener{
                     " inner join Produkt on Produkt.id = Stan.produkt where Zamowienie.osoba = '" + id_osoba + "'";
             System.out.println(sql);
             try {
-                tlista = this.stworz_liste(sql);
+                tlista = Misc.stworz_liste(sql, con);
                 JScrollPane sp;
                 sp = new JScrollPane(tlista);
                 mainPanel.removeAll();
@@ -217,9 +214,9 @@ public class Glowne extends JFrame implements ActionListener{
         }
         if (zrodlo == Oddzialy) {
             try {
-                tlista = this.stworz_liste( "Select nazwa, typ, wojewodztwo, miasto, ulica," +
+                tlista = Misc.stworz_liste("Select nazwa, typ, wojewodztwo, miasto, ulica," +
                         " concat(nr_budynku,'/', nr_lokalu ) as 'nr budynku / nr mieszkania'" +
-                        "from Oddzial inner join Adres on Adres.id = Oddzial.Adres ");
+                        "from Oddzial inner join Adres on Adres.id = Oddzial.Adres ", con);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -251,7 +248,7 @@ public class Glowne extends JFrame implements ActionListener{
 
                 if (ilosc_stan >= ilosc) {
 
-                    sql = "UPDATE Stan set Stan.ilosc='" + String.valueOf (ilosc_stan - ilosc) + "' where id ='" + id +"'";
+                    sql = "UPDATE Stan set Stan.ilosc='" + (ilosc_stan - ilosc) + "' where id ='" + id + "'";
                     st.executeUpdate(sql);
                     sql = "insert into Zamowienie (osoba, ilosc, produkt, wartosc_brutto, data_zamowienia, data_realizacji, status)" +
                             " values (?, ?, ?,?,   GETDATE(), null, 'Przyjeto')";
@@ -333,7 +330,7 @@ public class Glowne extends JFrame implements ActionListener{
                     sql += " where Typ.skrot = '" + typ+"'";
                 }
 
-                tlista = this.stworz_liste(sql);
+                tlista = Misc.stworz_liste(sql, con);
                 JScrollPane sp;
                 sp = new JScrollPane(tlista);
                 mainPanel.removeAll();
@@ -375,14 +372,7 @@ public class Glowne extends JFrame implements ActionListener{
         }
     }
     public void wyswietl_komunikat(String komunikat) {
-        frame1 = new JFrame();
-        frame1.setLocation(200,200);
-        JLabel label = new JLabel(komunikat);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setVerticalAlignment(SwingConstants.CENTER);
-        frame1.add(label);
-        frame1.setSize(200, 200);
-        frame1.setVisible(true);
+        frame1 = Misc.generuj_komunikat(komunikat);
     }
 
     public void zaloguj(String typUzytkownika){
@@ -442,44 +432,6 @@ public class Glowne extends JFrame implements ActionListener{
             menu.repaint();
         }
 
-
-    }
-    public JTable stworz_liste(String sql) throws SQLException {
-        //Zapytanie SQL
-        List<String[]> lista = new ArrayList<>();
-
-        Statement zapytanie2 = con.createStatement();
-
-
-        ResultSet rs = zapytanie2.executeQuery(sql);
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int ile_kolumn = rsmd.getColumnCount();
-
-        String[] columns = new String[ile_kolumn];
-        for (int i = 0; i < ile_kolumn; i++) {
-            columns[i] = rsmd.getColumnName(i+1);
-        }
-        //pobranie wybranych kolumn do jednej listy
-        while(rs.next()) {
-            String[] t= new String[ile_kolumn];
-            for (int i = 0; i < ile_kolumn; i++){
-                t[i] = rs.getString(i+1);
-            }
-            lista.add(t);
-        }
-        //konwersja listy do tablicy na potrzeby JTable
-        String[][] array =new String[lista.size()][];
-        for (int i=0;i<array.length;i++){
-            String[] row=lista.get(i);
-            array[i]=row;
-        }
-        for (int i = 0; i < array.length; i++){
-            System.out.println(Arrays.toString(array[i]));
-        }
-        zapytanie2.close();
-
-        //wygenerowanie tabeli
-        return new JTable(array,columns);
 
     }
 

@@ -116,15 +116,7 @@ public class Produkt extends JFrame implements ActionListener {
                        } catch(SQLException ex){
                            ex.printStackTrace();
                        } finally{
-                           f = new JFrame();
-                           f.setLocation(200, 200);
-                           JLabel label = new JLabel(komunikat);
-                           label.setHorizontalAlignment(SwingConstants.CENTER);
-                           label.setVerticalAlignment(SwingConstants.CENTER);
-                           f.add(label);
-                           f.setSize(250, 200);
-                           f.setVisible(true);
-                           this.setVisible(false);
+                            f = Misc.generuj_komunikat(komunikat);
                        }
 
 
