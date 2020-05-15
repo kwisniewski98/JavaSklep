@@ -418,7 +418,7 @@ public class Glowne extends JFrame implements ActionListener{
             DodajManagera.addActionListener(this);
             Manager.add(DodajManagera);
 
-            DodajOddzial = new JMenuItem("Dodaj Managera");
+            DodajOddzial = new JMenuItem("Dodaj Oddział");
             DodajOddzial.addActionListener(this);
             Manager.add(DodajOddzial);
 

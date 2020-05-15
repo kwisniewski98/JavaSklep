@@ -69,6 +69,7 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
+
             }
         }
 
@@ -92,8 +93,17 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
                     komunikat = "Wystąpił nieznany błąd";
                 }
             } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                komunikat = "Wystąpił nieznany błąd";
+                if (throwables.getErrorCode() == 547) {
+                    String[] wyjatek = throwables.getMessage().split(" ");
+                    komunikat = "<html>Wystąpił konfilkt z tabela " +
+                            wyjatek[wyjatek.length - 3].replaceAll(",", "") +
+                            " kolumną " + wyjatek[wyjatek.length - 1].replaceAll("", "") +
+                            "<br> Należy najpierw usunąć połączony rekord</html>";
+                } else {
+                    throwables.printStackTrace();
+                    komunikat = "Wystąpił nieznany błąd";
+
+                }
             } finally {
                 f = Misc.generuj_komunikat(komunikat);
             }
