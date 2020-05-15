@@ -27,7 +27,7 @@ public class Glowne extends JFrame implements ActionListener{
     JMenu Plik, Pomoc, Klientm, Pracownik, Manager;
     JMenuItem Wyjscie, PodPomoc, Produkty, Klient,
             Oddzialy, Status, DodajProdukt, DodajTyp, DodajZapotrzebowanie, Usun, DodajSprzedawce,
-            DodajManagera, DodajOddzial;
+            DodajManagera, DodajOddzial, Edytuj;
     String typUzytkownika;
 
 
@@ -124,6 +124,9 @@ public class Glowne extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         Object zrodlo = e.getSource();
+        if (zrodlo == Edytuj) {
+            frame1 = new Edytowanie(con);
+        }
         if (zrodlo == DodajOddzial) {
             frame1 = new Oddzial(con);
         }
@@ -422,6 +425,9 @@ public class Glowne extends JFrame implements ActionListener{
             DodajOddzial.addActionListener(this);
             Manager.add(DodajOddzial);
 
+            Edytuj = new JMenuItem("Edytuj");
+            Edytuj.addActionListener(this);
+            Manager.add(Edytuj);
             menu.revalidate();
             menu.repaint();
         }

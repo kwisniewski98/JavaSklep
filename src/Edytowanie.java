@@ -3,11 +3,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Usuwanie extends JFrame implements ActionListener, ItemListener {
+public class Edytowanie extends JFrame implements ActionListener, ItemListener {
 
     Connection con;
 
@@ -17,12 +17,13 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
     JScrollPane splista;
     JTable jtabela;
     String[] tabele;
-    JButton busun;
+    ArrayList<String> kolumny;
+    JButton bedytuj;
     JFrame f;
 
-    public Usuwanie(Connection con) {
+    public Edytowanie(Connection con) {
         this.con = con;
-
+        kolumny = new ArrayList<>();
         main_panel = new JPanel();
         main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.Y_AXIS));
         setContentPane(main_panel);
@@ -57,15 +58,24 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
                 jtabela = Misc.stworz_liste(sql, con);
                 splista = new JScrollPane(jtabela);
                 mid_panel.add(splista);
-                busun = new JButton("Usun");
-                busun.addActionListener(this);
+                bedytuj = new JButton("Edytuj");
+                bedytuj.addActionListener(this);
 
-                bot_panel.add(busun);
+                bot_panel.add(bedytuj);
 
                 main_panel.add(mid_panel);
                 main_panel.add(bot_panel);
                 revalidate();
                 repaint();
+                Statement st = con.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int numberOfColumns = rsmd.getColumnCount();
+                kolumny = new ArrayList<>();
+                for (int i = 1; i < numberOfColumns + 1; i++) {
+                    String columnName = rsmd.getColumnName(i);
+                    kolumny.add(columnName);
+                }
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -79,17 +89,40 @@ public class Usuwanie extends JFrame implements ActionListener, ItemListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object zrodlo = e.getSource();
-        if (zrodlo == busun) {
-
+        if (zrodlo == bedytuj) {
+            if (jtabela.isEditing()) {
+                jtabela.getCellEditor().stopCellEditing();
+            }
+            int iloscKolumt = jtabela.getColumnCount();
+            ArrayList<String> wartosci = new ArrayList<>();
+            int wiersz = jtabela.getSelectedRow();
             String komunikat = "";
-            int id = jtabela.getSelectedRow() + 1;
-            String tabela = String.valueOf(cblista.getSelectedItem());
-            String sql = "delete from " + tabela + " where id = '" + id + "'";
+            for (int i = 0; i < iloscKolumt; i++) {
+                wartosci.add((String) jtabela.getValueAt(wiersz, i));
+            }
+            String tabela = (String) cblista.getSelectedItem();
+            String sql = "update " + tabela + " set ";
+            String kolumna;
+            int i = 1;
+            String id = wartosci.get(0);
+            kolumny.remove(0);
+            for (Iterator<String> it = kolumny.iterator(); it.hasNext(); ) {
+                kolumna = it.next();
+                System.out.println(kolumna);
+
+                System.out.println(wartosci.get(i));
+                sql += kolumna + " = '" + wartosci.get(i) + "' ,";
+                i++;
+
+            }
+            sql = sql.substring(0, sql.length() - 1);
+            sql += " where id = " + id;
+            System.out.println(sql);
             try {
                 PreparedStatement psmt = con.prepareStatement(sql);
 
                 if (psmt.executeUpdate() == 1) {
-                    komunikat = "Pomyślnie usunięto";
+                    komunikat = "Pomyślnie edytowano";
                 } else {
                     komunikat = "Wystąpił nieznany błąd";
                 }
